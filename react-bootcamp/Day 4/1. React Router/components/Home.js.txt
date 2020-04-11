@@ -1,0 +1,9 @@
+import React from 'react'
+
+function Home(){ //could have also put- export default- here so it looks like - export default function Home()- instead of having it at bottom
+    return(
+        <div>HOME</div>
+    )
+}
+
+export default Home

@@ -1,0 +1,208 @@
+ <!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            First React App DAY 3
+        </title>
+        <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    </head>
+    <body>
+        <div id ='app'></div>
+
+        <script>
+            window.API = { 
+                fetchFriendsActive(){
+                    return new Promise((res,rej)=>{ 
+                      const friendsActive = ['Mike', 'Marque', 'Mary', 'Moe'] 
+                      //const friendsInactive = ['Jake']
+
+                      setTimeout(()=> res(friendsActive), 2000) 
+                      //setTimeout(()=> res(friendsInactive), 2000)
+                    })
+                },
+                fetchFriendsInactive() {
+                    return new Promise((res, rej) => {
+                        //const friendsActive = ['Mike', 'Marque', 'Mary', 'Moe']
+                        const friendsInactive = ['Jake']
+
+                       // setTimeout(() => res(friendsActive), 2000)
+                        setTimeout(() => res(friendsInactive), 2000)
+                    })
+                }
+            }
+        </script>
+
+        <script type = 'text/babel'>
+        function ActiveFriendsList (props) {  
+            return (
+                
+                <ul>
+                    {props.list.map((name) => ( 
+                         <li key={name}> 
+                          <span>{name}</span>
+                          <button onClick={()=>props.onRemoveFriend(name)}>Remove</button> 
+                          <button onClick={()=>props.onDecactivateFriend(name)}>DeActivate</button>
+                        </li>
+                    ))}
+                </ul>
+            )
+        }
+
+        function InactiveFriendsList(props) {
+                return (
+
+                    <ul>
+                        {props.list.map((name) => (
+                            <li key={name}>
+                                <span>{name}</span>
+                                <button onClick={() => props.onActivateFriend(name)}>Activate</button>
+                            </li>
+                        ))}
+                    </ul>
+                )
+            }
+            class App extends React.Component { 
+                constructor(props){ 
+                   super(props) 
+
+                   this.state = {
+                       friendsActive: [],
+                       friendsInactive: [],
+                       input:'',  
+                       loading: true, //1.default for loading is true until we get data. after 2sec
+                   }
+
+                   this.handleRemoveFriend = this.handleRemoveFriend.bind(this)
+                   this.updateInput = this.updateInput.bind(this) 
+                   this.handleAddFriend = this.handleAddFriend.bind(this) 
+                   this.handleClearAll = this.handleClearAll.bind(this)
+                   this.handleActivateFriend = this.handleActivateFriend.bind(this)
+                   this.handleDeactivateFriend = this.handleDeactivateFriend.bind(this)
+
+                   console.log('--constructor--') 
+               }
+
+               componentDidMount(){ 
+                   console.log('--componentDidMount--')
+
+                   API.fetchFriendsActive()  
+                    .then((friendsActive)=> { 
+                        this.setState({ 
+                            friendsActive,
+                            loading:false //2.When we can our Friends data set LOADING TO FALSE--
+                        })
+                    })
+                    API.fetchFriendsInactive()
+                    .then((friendsInactive)=> {
+                        this.setState({
+                            friendsInactive,
+                            loading: false //2.--so when data comes the LOADING header should disapear
+                        })
+                    })
+                    
+               }
+
+               componentDidUpdate(){
+                   console.log('--componentDidUpdate--')
+               }
+
+               componentWillUnmount(){
+                   console.log('--componentWillUnmount--')
+               }
+
+
+               handleAddFriend(){ 
+                    this.setState((currentState) => {
+                        return{
+                            friendsActive: currentState.friendsActive.concat([this.state.input]), 
+                            
+                            input: '', 
+                        }
+                    })
+               }
+
+               handleRemoveFriend(name){  
+                    this.setState((currentState) => {  
+                        return {
+                            friendsActive: currentState.friendsActive.filter((friend) => friend !== name) 
+                        }
+                    })
+               }
+
+               handleClearAll() {
+                   this.setState(()=>({
+                        friendsActive:[],
+                        friendsInactive:[]
+                   }))
+                }
+
+                 handleActivateFriend(name) {
+                    this.setState((currentState) => {
+                        return {
+                            friendsActive: currentState.friendsActive.concat([name]),
+                            friendsInactive: currentState.friendsInactive.filter((friend)=> friend !==name),
+                    
+                        }
+                    })
+                }
+
+                handleDeactivateFriend(name) {
+                    this.setState((currentState) => {
+                        return {
+                            friendsInactive: currentState.friendsInactive.concat([name]),
+                            friendsActive: currentState.friendsActive.filter((friend) => friend !== name),
+
+                        }
+                    })
+                }
+
+              updateInput(e){ 
+                  const value = e.target.value 
+                  this.setState(()=>({ 
+                      input:value
+                  }))
+              }
+               render() { 
+                   console.log('--render--')
+
+                   if(this.state.loading === true){ //3. After we render the loading prop will be TRUE untill the data is fetched after 2sec
+                       return <h1>LOADING</h1>
+                   }
+                   
+                return( 
+                    <div>
+                        <input 
+                            type='text'
+                            placeholder='new friend'
+                            value={this.state.input} 
+                            onChange={this.updateInput} 
+                        />
+                        <button onClick={this.handleAddFriend}>SUBMIT</button> 
+                    <br/>
+                        <button onClick={this.handleClearAll}>Clear All</button>
+                     <h1>Active Friends</h1>   
+                     <ActiveFriendsList 
+                     list ={this.state.friendsActive}
+                     onRemoveFriend = {this.handleRemoveFriend} 
+                     onDecactivateFriend = {this.handleDeactivateFriend} 
+                        /> 
+                     <h1>Inactive Friends</h1>
+                     <InactiveFriendsList
+                     list = {this.state.friendsInactive}
+                     onActivateFriend = {this.handleActivateFriend}
+                     />   
+                    </div>
+                )
+                }
+            }
+
+            ReactDOM.render(
+                <App />,
+                document.getElementById('app')
+            )
+        </script>
+    </body>
+
+</html>

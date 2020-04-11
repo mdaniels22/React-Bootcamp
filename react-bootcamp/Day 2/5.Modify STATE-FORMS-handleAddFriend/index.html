@@ -1,0 +1,90 @@
+ <!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            First React App DAY 2
+        </title>
+        <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    </head>
+    <body>
+        <div id ='app'></div>
+
+        <script type = 'text/babel'>
+        function FriendsList (props) {  
+            return (
+                <ul>
+                    {props.list.map((name) => ( 
+                         <li key={name}> 
+                          <span>{name}</span>
+                          <button onClick={()=>props.onRemoveFriend(name)}>DELETE</button> 
+                        </li>
+                    ))}
+                </ul>
+            )
+        }
+            class App extends React.Component { 
+                constructor(props){ 
+                   super(props) 
+
+                   this.state = {
+                       friends: ['Mike', 'Marque', 'Mary', 'Moe'],
+                       input:'', //2.create input property inside STATE bc it will need to be updated 
+                   }
+
+                   this.handleRemoveFriend = this.handleRemoveFriend.bind(this)
+                   this.updateInput = this.updateInput.bind(this) //5.Bind updateInput with correct THis
+                   this.handleAddFriend = this.handleAddFriend.bind(this) //7. if did not add this then would get error"Uncaught TypeError: Cannot read property 'setState' of undefined"
+               }
+               handleAddFriend(){ //6.Takes whatever the INPUT is and update the FRIENDS Array
+                    this.setState((currentState) => {
+                        return{
+                            friends: currentState.friends.concat([this.state.input]), //adds input to the friends array
+                            input: '', //deletes whats in input field after its modified
+                        }
+                    })
+               }
+
+               handleRemoveFriend(name){  
+                    this.setState((currentState) => {  
+                        return {
+                            friends: currentState.friends.filter((friend) => friend !== name) 
+                        }
+                    })
+               }
+
+              updateInput(e){ //5.method to change the value of the input. Passes (e) for Event
+                  const value = e.target.value //grabs the VALUE of the Input Field
+                  this.setState(()=>({ //we want to change the Input which is in this.state so must use this.SETSTATE//
+                      input:value
+                  }))
+              }
+               render() { 
+                   
+                return( 
+                    <div>
+                        <input //1.Create input field in UI
+                            type='text'
+                            placeholder='new friend'
+                            value={this.state.input} //3.Value will be whatever the INPUT is
+                            onChange={this.updateInput} //4.to change the value-input. without it would be a Controlled component-input would stay whatever you set it to input:''
+                        />
+                        <button onClick={this.handleAddFriend}>SUBMIT</button> 
+                     <FriendsList 
+                     list ={this.state.friends}
+                     onRemoveFriend = {this.handleRemoveFriend}  
+                        /> 
+                    </div>
+                )
+                }
+            }
+
+            ReactDOM.render(
+                <App />,
+                document.getElementById('app')
+            )
+        </script>
+    </body>
+
+</html>

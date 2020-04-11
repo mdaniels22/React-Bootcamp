@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            First React App DAY 2
+        </title>
+        <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    </head>
+    <body>
+        <div id ='app'></div>
+
+        <script type = 'text/babel'>
+        function FriendsList (props) {  //component responsible for taking varibles and place in UI/rending to view
+            return (
+                <ul>
+                    {props.list.map((name) => ( //takes in list props and maps out unorderd list.REACT needs a key prop to compare keys. making a list item for each prop
+                         <li key={name}> 
+                            {name}
+                        </li>
+                    ))}
+                </ul>
+            )
+        }
+            function App () {
+
+                const friends = ['Mike', 'Marque', 'Mary'] //variables in App component
+
+                return( //element w prop name friends
+                    <div>
+                     <FriendsList list ={friends}/> 
+                    </div>
+                )
+
+            }
+
+            ReactDOM.render(
+                <App />,
+                document.getElementById('app')
+            )
+        </script>
+    </body>
+
+</html>

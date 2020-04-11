@@ -1,0 +1,69 @@
+ <!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            First React App DAY 2
+        </title>
+        <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    </head>
+    <body>
+        <div id ='app'></div>
+
+        <script type = 'text/babel'>
+        function FriendsList (props) {  
+            return (
+                <ul>
+                    {props.list.map((name) => ( //3. THIS is being invoked by onRemoveFriend and to the left of the dot is the PROPS. so THIS is referencing PROPS Which is a PROBLEM bc we want it to referene App component
+                         <li key={name}> 
+                          <span>{name}</span>
+                          <button onClick={()=>props.onRemoveFriend(name)} >DELETE</button> 
+                        </li>
+                    ))}
+                </ul>
+            )
+        }
+            class App extends React.Component { 
+                constructor(props){ 
+                   super(props) 
+
+                   this.state = {
+                       friends: ['Mike', 'Marque', 'Mary', 'Moe'] 
+                   }
+
+                   this.handleRemoveFriend = this.handleRemoveFriend.bind(this) //4.SOLVE the PROBLEM of having THIS reference PROPS instead of App Component. Class App is the first to invoke THIS with this.state
+               }
+               handleAddFriend(){
+
+               }
+
+               handleRemoveFriend(name){  
+                    this.setState((currentState) => {  //1st THIS. to find out whats its referencing Must first find out where its being invoked
+                        return {
+                            friends: currentState.friends.filter((friend) => friend !== name) 
+                        }
+                    })
+               }
+                
+               render() { 
+                   
+                return( 
+                    <div>
+                     <FriendsList 
+                     list ={this.state.friends}
+                     onRemoveFriend = {this.handleRemoveFriend}  //2. THIS is referencing the onRemoveFriend
+                        /> 
+                    </div>
+                )
+                }
+            }
+
+            ReactDOM.render(
+                <App />,
+                document.getElementById('app')
+            )
+        </script>
+    </body>
+
+</html>
